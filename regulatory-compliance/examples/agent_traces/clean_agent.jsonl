@@ -1,0 +1,7 @@
+{"event":"session_start","session_id":"sess-092","declared_purposes":["customer_support","loan_underwriting"]}
+{"event":"log","message":"user token: 7f3a9c21e4b8 masked PII only","timestamp":"2026-02-11T10:02:01Z"}
+{"event":"tool_call","tool":"crm.lookup","purpose":"customer_support","args":{"subject_token":"7f3a9c21e4b8"}}
+{"event":"decision","adverse":false,"score":0.81,"explanation":"income above verified threshold","reason_codes":["income_threshold"],"human_review":false,"model":"credit-v4"}
+{"event":"generated_content","content_type":"image","model":"img-gen-2","ai_generated":true,"watermark":"synthetic"}
+{"event":"llm_output","content":"Your details are confirmed.","purpose":"customer_support"}
+{"event":"audit_log","event":"session_end","trace_id":"sess-092"}

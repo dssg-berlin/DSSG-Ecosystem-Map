@@ -1,0 +1,19 @@
+database:
+  host: db.internal
+  name: customers
+  storage_encryption: false
+  region: us-east-1
+  retention: none
+
+integrations:
+  analytics_processor:
+    endpoint: https://vendor.example/ingest
+    contract: unknown
+  model_provider:
+    endpoint: https://llm.example/v1
+    region: ap-south-1
+
+features:
+  purpose: general
+  chatbot: true
+  high_risk_ai: credit_scoring

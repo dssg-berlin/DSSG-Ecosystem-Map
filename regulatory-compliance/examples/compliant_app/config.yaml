@@ -1,0 +1,29 @@
+database:
+  host: db.internal
+  name: customers
+  encryption_at_rest: true
+  sslmode: require
+  region: eu-central-1
+  retention_days: 90
+
+integrations:
+  analytics_processor:
+    endpoint: https://vendor.example/ingest
+    dpa: DPA-2026-014
+  model_provider:
+    endpoint: https://llm.example/v1
+    region: eu-central-1
+    processor_contract: DPA-2026-018
+
+transfers:
+  us-east-1:
+    scc: "2021/914 module two"
+    transfer_impact: "completed 2026-01-12"
+
+controls:
+  dpia: "DPIA-2026-003"
+  audit_log: true
+  ai_disclosure: "visible at first message"
+  human_review: true
+  breach_notification: "incident runbook v2"
+  grievance: "privacy@example.test"

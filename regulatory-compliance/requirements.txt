@@ -1,0 +1,21 @@
+# Requirements
+
+| Package | Purpose |
+| --- | --- |
+| requests | Download official legal sources |
+| beautifulsoup4 | Parse EUR-Lex HTML articles |
+| lxml | Parser backend for BeautifulSoup |
+| pypdf | Extract text from the MeitY Gazette PDF |
+| pyyaml | Load the ontology and control definitions |
+| networkx | Build and export the knowledge graph |
+| pydantic | Available for future typed API models |
+| fastapi | Available for future service endpoint |
+
+Install with:
+
+```bash
+pip install -r requirements.txt
+```
+
+The prototype also uses the Python standard library (`json`, `re`, `hashlib`,
+`fnmatch`, `pathlib`, `collections`, `datetime`).

@@ -1,0 +1,6 @@
+{"event":"session_start","session_id":"sess-091","declared_purposes":["customer_support"]}
+{"event":"log","message":"user email: priya.sharma@example.com phone: 9876543210","timestamp":"2026-02-11T09:12:01Z"}
+{"event":"tool_call","tool":"crm.lookup","purpose":"marketing","args":{"email":"priya.sharma@example.com"}}
+{"event":"decision","adverse":true,"score":0.31,"model":"credit-v4"}
+{"event":"generated_content","content_type":"image","model":"img-gen-2"}
+{"event":"llm_output","content":"Your application was declined.","purpose":"general"}

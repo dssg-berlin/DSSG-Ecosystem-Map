@@ -1,0 +1,705 @@
+version: "0.1.0"
+title: "Unified EU-India Data & AI Compliance Ontology"
+description: >-
+  Themes and controls that map GDPR, the EU AI Act and the India DPDP Act onto a
+  single citation-verified layer. Every citation is validated against provision
+  identifiers extracted by src/collect_sources.py.
+
+relation_types:
+  equivalent: "Rules protect the same interest with substantially similar effect."
+  overlapping: "Rules protect the same interest but differ in scope or mechanism."
+  complementary: "One regime adds an obligation the other does not state."
+  stricter: "The cited provision imposes a higher bar than its peer in the mapping."
+
+themes:
+  - id: T01
+    slug: lawfulness_transparency
+    label: Lawfulness, fairness and transparency
+    description: >-
+      Processing must have a lawful basis and be disclosed in a comprehensible
+      form. The GDPR states the principle, the DPDP Act requires a notice, and
+      the AI Act adds transparency toward people deploying and interacting with
+      AI systems.
+    provisions:
+      - GDPR:ART:5
+      - GDPR:ART:6
+      - GDPR:ART:12
+      - GDPR:ART:13
+      - EU AI Act:ART:13
+      - DPDP:SEC:4
+      - DPDP:SEC:5
+    mappings:
+      - [GDPR:ART:13, DPDP:SEC:5, equivalent]
+      - [GDPR:ART:5, DPDP:SEC:4, overlapping]
+      - [EU AI Act:ART:13, GDPR:ART:13, complementary]
+
+  - id: T02
+    slug: purpose_limitation
+    label: Purpose limitation and secondary use
+    description: >-
+      Data collected for one specified purpose must not be silently repurposed.
+      GDPR Article 5(1)(b) and DPDP section 6(1) both tie processing to a
+      specified purpose; DPDP section 8(7) adds a deemed-purpose-expiry rule.
+    provisions:
+      - GDPR:ART:5
+      - GDPR:ART:6
+      - GDPR:ART:89
+      - DPDP:SEC:4
+      - DPDP:SEC:6
+      - DPDP:SEC:8
+      - EU AI Act:ART:10
+    mappings:
+      - [GDPR:ART:5, DPDP:SEC:6, equivalent]
+      - [DPDP:SEC:8, GDPR:ART:5, complementary]
+
+  - id: T03
+    slug: data_minimisation
+    label: Data minimisation and necessity
+    description: >-
+      Only data necessary for the specified purpose may be collected or retained.
+      Expressed as a principle in GDPR Article 5(1)(c) and as a consent limitation
+      in DPDP section 6(1).
+    provisions:
+      - GDPR:ART:5
+      - GDPR:ART:25
+      - DPDP:SEC:6
+      - DPDP:SEC:8
+    mappings:
+      - [GDPR:ART:5, DPDP:SEC:6, overlapping]
+
+  - id: T04
+    slug: consent
+    label: Valid consent and withdrawal
+    description: >-
+      Affirmative, specific, informed and withdrawable consent. GDPR regulates
+      consent as one lawful basis among several; the DPDP Act makes consent the
+      default route and requires a preceding notice.
+    provisions:
+      - GDPR:ART:4
+      - GDPR:ART:6
+      - GDPR:ART:7
+      - GDPR:ART:8
+      - GDPR:ART:21
+      - DPDP:SEC:4
+      - DPDP:SEC:5
+      - DPDP:SEC:6
+      - DPDP:SEC:7
+    mappings:
+      - [GDPR:ART:7, DPDP:SEC:6, equivalent]
+      - [GDPR:ART:7, DPDP:SEC:6, complementary]
+      - [DPDP:SEC:5, GDPR:ART:13, overlapping]
+
+  - id: T05
+    slug: pii_masking_pseudonymisation
+    label: PII masking and pseudonymisation
+    description: >-
+      Personal data in logs, prompts and derived stores must be minimised,
+      pseudonymised or masked. This is the primary control for the stated
+      rationale of preventing accidental logging of unmasked PII.
+    provisions:
+      - GDPR:ART:4
+      - GDPR:ART:5
+      - GDPR:ART:25
+      - GDPR:ART:32
+      - DPDP:SEC:8
+      - EU AI Act:ART:10
+    mappings:
+      - [GDPR:ART:25, DPDP:SEC:8, overlapping]
+      - [GDPR:ART:4, DPDP:SEC:2, overlapping]
+
+  - id: T06
+    slug: security_safeguards
+    label: Security of processing
+    description: >-
+      Appropriate technical and organisational measures, including encryption
+      and access control, are required by both data protection regimes.
+    provisions:
+      - GDPR:ART:32
+      - GDPR:ART:25
+      - DPDP:SEC:8
+    mappings:
+      - [GDPR:ART:32, DPDP:SEC:8, equivalent]
+
+  - id: T07
+    slug: automated_decision_making
+    label: Automated decision-making
+    description: >-
+      Decisions with legal or similarly significant effects need a lawful basis,
+      safeguards, meaningful information about the logic and, in the EU AI Act,
+      conformity obligations for high-risk systems.
+    provisions:
+      - GDPR:ART:22
+      - GDPR:ART:15
+      - EU AI Act:ART:6
+      - EU AI Act:ART:26
+      - EU AI Act:ART:86
+      - DPDP:SEC:8
+    mappings:
+      - [GDPR:ART:22, DPDP:SEC:8, overlapping]
+      - [EU AI Act:ART:86, GDPR:ART:22, complementary]
+      - [EU AI Act:ART:6, GDPR:ART:22, complementary]
+
+  - id: T08
+    slug: synthetic_content_transparency
+    label: Synthetic content and AI interaction transparency
+    description: >-
+      People must be told when they interact with AI and when content is
+      artificially generated or manipulated. The AI Act is the primary source;
+      GDPR and DPDP supply the general transparency and notice principles.
+    provisions:
+      - EU AI Act:ART:50
+      - EU AI Act:ART:13
+      - GDPR:ART:5
+      - GDPR:ART:13
+      - DPDP:SEC:5
+    mappings:
+      - [EU AI Act:ART:50, GDPR:ART:5, complementary]
+      - [EU AI Act:ART:50, DPDP:SEC:5, complementary]
+
+  - id: T09
+    slug: children_data
+    label: Children's data
+    description: >-
+      Verifiable parental consent, a ban on detrimental processing and a ban on
+      behavioural monitoring or targeted advertising of children. Both regimes
+      also regulate manipulative AI directed at children.
+    provisions:
+      - GDPR:ART:8
+      - EU AI Act:ART:5
+      - DPDP:SEC:9
+    mappings:
+      - [GDPR:ART:8, DPDP:SEC:9, overlapping]
+      - [EU AI Act:ART:5, DPDP:SEC:9, complementary]
+
+  - id: T10
+    slug: retention_erasure
+    label: Retention limits and erasure
+    description: >-
+      Personal data must be deleted when the purpose is served or consent is
+      withdrawn. DPDP section 8(7) and (8) make the expiry test explicit.
+    provisions:
+      - GDPR:ART:5
+      - GDPR:ART:17
+      - DPDP:SEC:8
+      - DPDP:SEC:12
+    mappings:
+      - [GDPR:ART:17, DPDP:SEC:12, equivalent]
+      - [GDPR:ART:5, DPDP:SEC:8, overlapping]
+
+  - id: T11
+    slug: processor_governance
+    label: Processors and vendors
+    description: >-
+      Outsourced processing requires a binding contract and the controller or
+      Data Fiduciary remains responsible for the processor's compliance.
+    provisions:
+      - GDPR:ART:28
+      - GDPR:ART:26
+      - DPDP:SEC:8
+    mappings:
+      - [GDPR:ART:28, DPDP:SEC:8, equivalent]
+
+  - id: T12
+    slug: risk_impact_assessment
+    label: Impact assessment and auditability
+    description: >-
+      High-risk processing and high-risk AI require prior assessment, logging
+      and periodic review. DPDP section 10 adds periodic audit duties for
+      Significant Data Fiduciaries.
+    provisions:
+      - GDPR:ART:35
+      - EU AI Act:ART:9
+      - EU AI Act:ART:12
+      - EU AI Act:ART:26
+      - EU AI Act:ART:27
+      - DPDP:SEC:10
+    mappings:
+      - [GDPR:ART:35, EU AI Act:ART:9, equivalent]
+      - [DPDP:SEC:10, EU AI Act:ART:27, overlapping]
+
+  - id: T13
+    slug: cross_border_transfer
+    label: Cross-border transfers
+    description: >-
+      Transfers outside the originating jurisdiction need a legal mechanism and
+      comparable protection. GDPR Chapter V and DPDP section 16 are the anchors.
+    provisions:
+      - GDPR:ART:44
+      - GDPR:ART:45
+      - GDPR:ART:46
+      - DPDP:SEC:16
+    mappings:
+      - [GDPR:ART:46, DPDP:SEC:16, overlapping]
+
+  - id: T14
+    slug: data_subject_rights
+    label: Individual rights and grievance redressal
+    description: >-
+      Access, correction, erasure, nomination and an effective complaint path.
+      DPDP sections 11 to 14 and GDPR Articles 15 to 22 express this similarly.
+    provisions:
+      - GDPR:ART:15
+      - GDPR:ART:16
+      - GDPR:ART:17
+      - GDPR:ART:21
+      - GDPR:ART:77
+      - DPDP:SEC:11
+      - DPDP:SEC:12
+      - DPDP:SEC:13
+      - DPDP:SEC:14
+    mappings:
+      - [GDPR:ART:15, DPDP:SEC:11, equivalent]
+      - [GDPR:ART:77, DPDP:SEC:13, equivalent]
+
+  - id: T15
+    slug: human_oversight
+    label: Human oversight
+    description: >-
+      Human intervention for solely automated decisions and for high-risk AI
+      systems, including the right to obtain an explanation under the AI Act.
+    provisions:
+      - GDPR:ART:22
+      - EU AI Act:ART:14
+      - EU AI Act:ART:86
+      - DPDP:SEC:8
+    mappings:
+      - [EU AI Act:ART:14, GDPR:ART:22, complementary]
+
+  - id: T16
+    slug: accuracy_quality
+    label: Accuracy and data quality
+    description: >-
+      Data used for decisions must be accurate and complete; the AI Act adds
+      data governance duties for training, validation and testing data.
+    provisions:
+      - GDPR:ART:5
+      - GDPR:ART:16
+      - EU AI Act:ART:10
+      - DPDP:SEC:8
+    mappings:
+      - [GDPR:ART:5, EU AI Act:ART:10, overlapping]
+      - [GDPR:ART:16, DPDP:SEC:8, overlapping]
+
+  - id: T17
+    slug: breach_response
+    label: Breach detection and notification
+    description: >-
+      Notify the regulator and affected individuals after a personal data
+      breach. GDPR sets 72 hours and a risk test; DPDP requires intimation in a
+      prescribed form.
+    provisions:
+      - GDPR:ART:33
+      - GDPR:ART:34
+      - DPDP:SEC:8
+    mappings:
+      - [GDPR:ART:33, DPDP:SEC:8, overlapping]
+
+  - id: T18
+    slug: prohibited_manipulative_practices
+    label: Prohibited and manipulative practices
+    description: >-
+      AI Act prohibitions on manipulative and exploitative systems, reinforced
+      by GDPR fairness and the DPDP ban on harmful processing of children.
+    provisions:
+      - EU AI Act:ART:5
+      - GDPR:ART:5
+      - DPDP:SEC:9
+    mappings:
+      - [EU AI Act:ART:5, DPDP:SEC:9, complementary]
+
+controls:
+  - id: C01
+    title: Raw PII written to application logs
+    theme: T05
+    severity: critical
+    rationale: >-
+      Logging unmasked identifiers creates a new, uncontrolled processing
+      purpose and defeats data minimisation and security duties.
+    citations: [GDPR:ART:5, GDPR:ART:32, DPDP:SEC:8]
+    code_patterns:
+      - regex: '(?i)(logger|log|logging)\.(debug|info|warn|warning|error|exception)\s*\([^\n]{0,300}\b(email|e_mail|aadhaar|aadhar|pan_card|pancard|passport|ssn|phone|mobile|address|dob|customer_id)\b'
+        globs: ["*.py"]
+        message: "Log statement appears to include an unmasked personal identifier."
+      - regex: '(?i)(console\.(log|info|warn|error)|print)\s*\([^\n]{0,300}\b(email|aadhaar|aadhar|pan_card|ssn|phone|mobile|passport)\b'
+        globs: ["*.js", "*.ts", "*.jsx", "*.tsx", "*.py"]
+        message: "Console output appears to include an unmasked personal identifier."
+    trace_patterns:
+      - regex: '(?i)\b(email|aadhaar|aadhar|pan_card|ssn|passport|phone|mobile)\b\s*[:=]\s*"?[A-Za-z0-9@._+-]{4,}'
+        fields: [message, content, args, result, text]
+        message: "Agent trace event contains an unmasked personal identifier."
+    remediation: "Mask or tokenise identifiers before logging; log a salted hash or last 4 digits only."
+
+  - id: C02
+    title: Personal data embedded in LLM prompts or agent memory
+    theme: T05
+    severity: critical
+    rationale: >-
+      Sending personal data to a model is a disclosure to a processor and must
+      be necessary, disclosed and minimised.
+    citations: [GDPR:ART:5, GDPR:ART:28, DPDP:SEC:6, DPDP:SEC:8]
+    code_patterns:
+      - regex: '(?i)(prompt|messages|system_prompt|user_prompt)\s*[:=][^\n]{0,300}\b(email|aadhaar|ssn|passport|phone|mobile|customer)\b'
+        globs: ["*.py", "*.js", "*.ts"]
+        message: "Prompt construction appears to interpolate personal data."
+    trace_patterns:
+      - regex: '(?i)(llm_prompt|prompt|tool_call|tool_result)[^\n]{0,200}\b(email|aadhaar|aadhar|ssn|passport|phone|mobile)\b'
+        fields: [event, message, content, args, result]
+        message: "Personal data appears in an LLM prompt or tool payload."
+    remediation: "Replace direct identifiers with pseudonyms before model calls; keep the mapping in a separate controlled store."
+
+  - id: C03
+    title: Unmasked PII persisted to storage
+    theme: T05
+    severity: high
+    rationale: >-
+      Storage of raw identifiers widens the processing surface and makes
+      deletion and purpose limitation harder to enforce.
+    citations: [GDPR:ART:25, GDPR:ART:32, DPDP:SEC:8]
+    code_patterns:
+      - regex: '(?i)(insert|insertOne|save|create|write|put|upsert|UPDATE\s+\w+\s+SET)[^\n]{0,300}\b(email|aadhaar|aadhar|ssn|passport|phone|mobile)\b[^\n]{0,200}(?!mask|hash|encrypt|token|redact)'
+        globs: ["*.py", "*.js", "*.ts", "*.sql"]
+        message: "Write operation appears to persist a raw personal identifier."
+    remediation: "Tokenise or encrypt identifiers at rest and record the masking transform in the data inventory."
+
+  - id: C04
+    title: Personal data processed without a consent gate
+    theme: T04
+    severity: high
+    rationale: >-
+      A handler that consumes personal data without a consent or lawful-basis
+      check cannot demonstrate valid processing.
+    citations: [GDPR:ART:6, GDPR:ART:7, DPDP:SEC:4, DPDP:SEC:6]
+    absence_check:
+      require_any: [consent, lawful_basis, legitimate_use, lawful_use, purpose_consent, consent_id]
+      applies_when_any: [email, aadhaar, aadhar, ssn, passport, phone, mobile, personal_data]
+      globs: ["*.py", "*.js", "*.ts"]
+      message: "No consent or lawful-basis check found anywhere in the audited target."
+    remediation: "Add an explicit lawful-basis check before processing and record consent evidence with purpose and timestamp."
+
+  - id: C05
+    title: Pre-ticked or non-granular consent
+    theme: T04
+    severity: high
+    rationale: >-
+      Valid consent requires a clear affirmative action and must be specific to
+      each purpose.
+    citations: [GDPR:ART:4, GDPR:ART:7, DPDP:SEC:6]
+    code_patterns:
+      - regex: '(?i)(consent|agree|terms)[^\n]{0,80}(checked|selected|value)\s*[:=]\s*(true|"on"|1)'
+        globs: ["*.py", "*.js", "*.ts", "*.jsx", "*.tsx", "*.html", "*.yaml", "*.yml"]
+        message: "Consent control appears pre-selected."
+      - regex: '(?i)(consent|agree)[^\n]{0,60}(all| blanket| everything)'
+        globs: ["*.py", "*.js", "*.ts", "*.yaml", "*.yml"]
+        message: "Consent appears bundled rather than purpose-specific."
+    remediation: "Default consent controls to false and provide one toggle per processing purpose."
+
+  - id: C06
+    title: Purpose drift or undisclosed secondary use
+    theme: T02
+    severity: high
+    rationale: >-
+      Reusing collected data for analytics, model training or third parties
+      without a matching notice breaks purpose limitation.
+    citations: [GDPR:ART:5, GDPR:ART:6, DPDP:SEC:6, DPDP:SEC:8]
+    code_patterns:
+      - regex: '(?i)(secondary_use|repurpos|reuse_for|share_with_third_party|sell_data|data_broker|train_model_on|use_for_training)'
+        globs: ["*.py", "*.js", "*.ts", "*.yaml", "*.yml", "*.md"]
+        message: "Secondary-use or repurposing behaviour declared without a visible purpose check."
+      - regex: '(?i)purpose\s*[:=]\s*["'']?(general|any|all|analytics|misc|other|unknown)'
+        globs: ["*.py", "*.js", "*.ts", "*.yaml", "*.yml", "*.json"]
+        message: "Processing purpose is overly broad."
+    trace_patterns:
+      - regex: '(?i)(purpose|purpose_of_use)\s*[:=]\s*["'']?(general|any|all|misc|other|unknown)'
+        fields: [message, args, metadata]
+        message: "Agent trace records an undefined processing purpose."
+    remediation: "Bind every processing call to a registered purpose identifier and reject purposes not present in the notice."
+
+  - id: C07
+    title: No retention limit or expiry for personal data
+    theme: T10
+    severity: high
+    rationale: >-
+      Retention must be no longer than necessary and DPDP deems the purpose
+      expired after the prescribed inactivity period.
+    citations: [GDPR:ART:5, DPDP:SEC:8, DPDP:SEC:12]
+    absence_check:
+      require_any: [retention_days, retention_period, ttl, expires_at, purge_after, delete_after, erase_after]
+      applies_when_any: [email, aadhaar, aadhar, ssn, passport, phone, mobile, personal_data]
+      globs: ["*.py", "*.js", "*.ts", "*.yaml", "*.yml", "*.sql", "*.json"]
+      message: "No retention, TTL or purge configuration found for a system that handles personal data."
+    remediation: "Define a retention policy per data category and enforce it with a scheduled purge job."
+
+  - id: C08
+    title: No erasure or withdrawal path
+    theme: T10
+    severity: high
+    rationale: >-
+      Consent withdrawal and erasure requests must be actionable across the
+      system, including processors.
+    citations: [GDPR:ART:17, GDPR:ART:21, DPDP:SEC:6, DPDP:SEC:8, DPDP:SEC:12]
+    absence_check:
+      require_any: [erase, delete_user, delete_account, withdraw_consent, right_to_erasure, purge_user]
+      applies_when_any: [email, aadhaar, aadhar, ssn, passport, phone, mobile, personal_data]
+      globs: ["*.py", "*.js", "*.ts", "*.sql"]
+      message: "No erasure or consent-withdrawal handler found."
+    remediation: "Implement an erasure endpoint that propagates deletion to processors and logs completion."
+
+  - id: C09
+    title: Significant automated decision without explanation
+    theme: T07
+    severity: high
+    rationale: >-
+      Meaningful information about the logic and the right to an explanation
+      are required for solely automated decisions with significant effects.
+    citations: [GDPR:ART:22, GDPR:ART:15, EU AI Act:ART:86, DPDP:SEC:8]
+    absence_check:
+      require_any: [explanation, explain, reason_codes, decision_reason, rationale]
+      applies_when_any: ["auto_?decid", decision_engine, "risk_?score", "approve_?loan", "deny_?claim"]
+      globs: ["*.py", "*.js", "*.ts"]
+      message: "Decision logic found but no explanation or reason-code generation found."
+    trace_patterns:
+      - regex: '(?i)"event"\s*:\s*"decision"[^\n]{0,400}'
+        fields: [raw]
+        message: "Decision event emitted; verify explanation and human review flags."
+    remediation: "Return reason codes and a plain-language explanation with every significant decision."
+
+  - id: C10
+    title: No human review for high-impact decisions
+    theme: T15
+    severity: high
+    rationale: >-
+      Human oversight is an explicit safeguard for automated decisions and
+      high-risk AI systems.
+    citations: [GDPR:ART:22, EU AI Act:ART:14, EU AI Act:ART:6, DPDP:SEC:8]
+    absence_check:
+      require_any: [human_review, manual_review, human_in_the_loop, escalate_to_human, override]
+      applies_when_any: ["auto_?decid", decision_engine, "risk_?score", high_risk_ai, credit_score, hiring_model]
+      globs: ["*.py", "*.js", "*.ts", "*.yaml", "*.yml"]
+      message: "High-impact decision logic found with no human review or override path."
+    remediation: "Route borderline or adverse decisions to a trained human reviewer and record the override."
+
+  - id: C11
+    title: Synthetic or AI-generated content without disclosure
+    theme: T08
+    severity: high
+    rationale: >-
+      Deployers of systems generating synthetic content must disclose the
+      artificial origin unless an exception applies.
+    citations: [EU AI Act:ART:50, GDPR:ART:5, DPDP:SEC:5]
+    absence_check:
+      require_any: [ai_generated, synthetic_content, synthetic_media, generated_by_ai, deepfake_disclosure, watermark]
+      applies_when_any: ["synthesi[sz]", deepfake, text_to_image, voice_clone, generate_image, generate_text]
+      globs: ["*.py", "*.js", "*.ts", "*.html", "*.yaml", "*.yml"]
+      message: "Synthetic content generation found with no disclosure or labelling mechanism."
+    trace_patterns:
+      - regex: '(?i)"event"\s*:\s*"(generated_content|llm_output|synthetic)"[^\n]{0,300}'
+        fields: [raw]
+        message: "Generated content event emitted; verify disclosure flag."
+    remediation: "Attach a machine-readable and human-visible AI-generated label to every synthetic output."
+
+  - id: C12
+    title: AI interaction without user disclosure
+    theme: T08
+    severity: medium
+    rationale: >-
+      People must be informed that they are interacting with an AI system.
+    citations: [EU AI Act:ART:50, GDPR:ART:13, DPDP:SEC:5]
+    absence_check:
+      require_any: [ai_disclosure, you_are_talking_to_an_ai, bot_notice, ai_agent_notice, interacting_with_ai]
+      applies_when_any: [chatbot, ai_agent, llm_chat, assistant_reply, conversational_agent]
+      globs: ["*.py", "*.js", "*.ts", "*.html", "*.yaml", "*.yml", "*.md"]
+      message: "Conversational AI component found with no notice that the user is interacting with AI."
+    remediation: "Show a persistent notice at the first interaction and in the privacy information."
+
+  - id: C13
+    title: Child data without verifiable guardian consent
+    theme: T09
+    severity: critical
+    rationale: >-
+      Processing a child's data requires verifiable parental consent and a ban
+      on detrimental effects.
+    citations: [GDPR:ART:8, DPDP:SEC:9, EU AI Act:ART:5]
+    absence_check:
+      require_any: [verifiable_consent, guardian_consent, parental_consent, parent_verification, age_assurance]
+      applies_when_any: [child, minor, "under_?18", underage]
+      globs: ["*.py", "*.js", "*.ts", "*.yaml", "*.yml"]
+      message: "Child-related processing found with no verifiable parental consent control."
+    remediation: "Implement age assurance plus verifiable guardian consent before any child data processing."
+
+  - id: C14
+    title: Tracking or targeted advertising directed at children
+    theme: T09
+    severity: critical
+    rationale: >-
+      DPDP section 9(3) prohibits tracking, behavioural monitoring and targeted
+      advertising directed at children; the AI Act prohibits exploitative AI.
+    citations: [DPDP:SEC:9, EU AI Act:ART:5]
+    code_patterns:
+      - regex: '(?i)(target(ed)?[_ ]?(ad|advert)|behavio(u)?ral[_ ]monitor|track(ing)?[_ ]?child|child[_ ]?(profile|tracking))'
+        globs: ["*.py", "*.js", "*.ts", "*.yaml", "*.yml"]
+        message: "Child tracking or targeted advertising declared."
+    remediation: "Remove child-directed tracking and targeted advertising entirely."
+
+  - id: C15
+    title: No breach detection and notification hook
+    theme: T17
+    severity: high
+    rationale: >-
+      Personal data breaches must be intimated to the regulator and affected
+      individuals.
+    citations: [GDPR:ART:33, GDPR:ART:34, DPDP:SEC:8]
+    absence_check:
+      require_any: [breach_notification, notify_breach, breach_alert, incident_response, data_breach_notify]
+      applies_when_any: [email, aadhaar, aadhar, ssn, passport, phone, mobile, personal_data]
+      globs: ["*.py", "*.js", "*.ts", "*.yaml", "*.yml", "*.md"]
+      message: "No breach notification or incident response hook found."
+    remediation: "Add a breach detection pipeline with regulator and data-principal notification templates and timers."
+
+  - id: C16
+    title: Cross-border transfer without transfer-control evidence
+    theme: T13
+    severity: high
+    rationale: >-
+      Transfers outside the jurisdiction require a legal mechanism and
+      assurance of comparable protection.
+    citations: [GDPR:ART:44, GDPR:ART:46, DPDP:SEC:16]
+    absence_check:
+      require_any: [standard_contractual, scc, transfer_impact, adequacy, transfer_consent, cross_border_assessment]
+      applies_when_any: ["us[-_]?east", "eu[-_]?west", "ap[-_]?south", "third[-_]?country", overseas]
+      globs: ["*.py", "*.js", "*.ts", "*.yaml", "*.yml", "*.md"]
+      message: "Foreign processing region referenced with no transfer mechanism or assessment."
+    remediation: "Record the transfer mechanism and run a transfer impact assessment before enabling the region."
+
+  - id: C17
+    title: Processor used without a contract or DPA reference
+    theme: T11
+    severity: high
+    rationale: >-
+      A Data Fiduciary or controller may only engage a processor under a valid
+      contract and remains accountable for it.
+    citations: [GDPR:ART:28, DPDP:SEC:8]
+    absence_check:
+      require_any: [dpa, data_processing_agreement, processor_contract, vendor_agreement, subprocessor_register]
+      applies_when_any: [processor, vendor, third_party, subprocessor]
+      globs: ["*.py", "*.js", "*.ts", "*.yaml", "*.yml", "*.md"]
+      message: "Processor integration found with no processing agreement or subprocessor register."
+    remediation: "Maintain a signed DPA register and reference the agreement identifier in processor configuration."
+
+  - id: C18
+    title: High-risk AI or processing without prior impact assessment
+    theme: T12
+    severity: high
+    rationale: >-
+      A DPIA or fundamental rights impact assessment must precede high-risk
+      processing; Significant Data Fiduciaries owe periodic audit duties.
+    citations: [GDPR:ART:35, EU AI Act:ART:9, EU AI Act:ART:27, DPDP:SEC:10]
+    absence_check:
+      require_any: [dpia, impact_assessment, fria, fundamental_rights, algorithmic_impact, audit_report]
+      applies_when_any: [high_risk_ai, "risk_?score", credit_score, hiring_model, biometric, automated_decision]
+      globs: ["*.py", "*.js", "*.ts", "*.yaml", "*.yml", "*.md"]
+      message: "High-risk processing detected with no impact assessment or audit artefact."
+    remediation: "Complete and version a DPIA or FRIA before deployment and link its identifier in the service config."
+
+  - id: C19
+    title: Decision inputs without completeness and accuracy checks
+    theme: T16
+    severity: medium
+    rationale: >-
+      Data used for decisions affecting the individual must be complete,
+      accurate and consistent.
+    citations: [GDPR:ART:5, GDPR:ART:16, EU AI Act:ART:10, DPDP:SEC:8]
+    absence_check:
+      require_any: [validate_input, data_quality, completeness_check, accuracy_check, schema_validation]
+      applies_when_any: [decision_engine, "risk_?score", credit_score, "auto_?decid"]
+      globs: ["*.py", "*.js", "*.ts"]
+      message: "Decision path found with no input validation or data-quality check."
+    remediation: "Add schema and range validation plus a correction path before decisions are issued."
+
+  - id: C20
+    title: PII store without encryption at rest
+    theme: T06
+    severity: high
+    rationale: >-
+      Reasonable security safeguards and appropriate technical measures include
+      encryption of personal data at rest.
+    citations: [GDPR:ART:32, DPDP:SEC:8]
+    absence_check:
+      require_any: [encrypt, encryption_at_rest, kms, tde, cipher, encrypted_connection, sslmode]
+      applies_when_any: [email, aadhaar, aadhar, ssn, passport, phone, mobile, personal_data]
+      globs: ["*.py", "*.js", "*.ts", "*.yaml", "*.yml", "*.sql", "*.json", "*.env"]
+      message: "Personal data store configured with no encryption control."
+    remediation: "Enable encryption at rest with managed keys and TLS for all connections."
+
+  - id: C21
+    title: No grievance redressal mechanism
+    theme: T14
+    severity: medium
+    rationale: >-
+      Data principals must have a readily available grievance redressal path.
+    citations: [DPDP:SEC:13, GDPR:ART:77]
+    absence_check:
+      require_any: [grievance, complaint, redressal, support_ticket, appeal]
+      applies_when_any: [email, aadhaar, ssn, phone, personal_data, data_principal]
+      globs: ["*.py", "*.js", "*.ts", "*.yaml", "*.yml", "*.md"]
+      message: "No grievance or complaint mechanism found."
+    remediation: "Publish a grievance channel and track resolution against a defined SLA."
+
+  - id: C22
+    title: No access or correction endpoint for individuals
+    theme: T14
+    severity: medium
+    rationale: >-
+      Individuals can request access and correction of their personal data.
+    citations: [GDPR:ART:15, GDPR:ART:16, DPDP:SEC:11, DPDP:SEC:12]
+    absence_check:
+      require_any: [dsar, access_request, get_my_data, export_user_data, correction, update_profile]
+      applies_when_any: [email, aadhaar, ssn, phone, personal_data, data_principal]
+      globs: ["*.py", "*.js", "*.ts"]
+      message: "No access, export or correction endpoint found."
+    remediation: "Expose authenticated access and correction endpoints with an audit trail."
+
+  - id: C23
+    title: Manipulative interface or dark pattern
+    theme: T18
+    severity: high
+    rationale: >-
+      AI Act prohibitions target manipulative techniques that materially
+      distort behaviour; GDPR fairness applies as well.
+    citations: [EU AI Act:ART:5, GDPR:ART:5, DPDP:SEC:6]
+    code_patterns:
+      - regex: '(?i)(dark_pattern|confirmshaming|forced_action|prechecked|pre_checked|hidden_optout|hide_optout|fake_urgency)'
+        globs: ["*.py", "*.js", "*.ts", "*.jsx", "*.tsx", "*.html", "*.yaml", "*.yml"]
+        message: "Manipulative interface pattern declared."
+    remediation: "Remove the manipulative pattern and present equivalent choices with equal prominence."
+
+  - id: C24
+    title: No audit logging of agent or model actions
+    theme: T12
+    severity: medium
+    rationale: >-
+      High-risk AI systems need automatic logging over their lifetime for
+      traceability and post-market monitoring.
+    citations: [EU AI Act:ART:12, EU AI Act:ART:26, DPDP:SEC:10, GDPR:ART:5]
+    absence_check:
+      require_any: [audit_log, audit_trail, trace_id, span_id, opentelemetry, otel, observability]
+      applies_when_any: [llm, agent, model, inference, decision_engine]
+      globs: ["*.py", "*.js", "*.ts", "*.yaml", "*.yml", "*.md"]
+      message: "AI or agent component found with no audit logging or trace instrumentation."
+    remediation: "Emit structured audit events with trace identifiers, actor, purpose and decision outcome."
+
+  - id: C25
+    title: Purpose-bound access control in agent traces
+    theme: T02
+    severity: high
+    rationale: >-
+      Agent tool calls must stay within the declared purpose of the consent
+      under which the data was collected.
+    citations: [GDPR:ART:5, GDPR:ART:6, DPDP:SEC:6, EU AI Act:ART:26]
+    trace_patterns:
+      - regex: '(?i)(purpose_mismatch|purpose_not_allowed|undeclared_purpose|outside_purpose|no_matching_purpose)'
+        fields: [message, content, metadata, result]
+        message: "Agent trace indicates a tool call outside the declared processing purpose."
+      - regex: '(?i)(tool_call|tool_result)[^\n]{0,200}(payment|bank|aadhaar|gst|tax|marketing)[^\n]{0,200}(support|chatbot|faq)'
+        fields: [raw]
+        message: "Agent used a sensitive tool from an unrelated conversational purpose."
+    remediation: "Enforce purpose-to-tool allowlists at the agent tool router and log denials."
