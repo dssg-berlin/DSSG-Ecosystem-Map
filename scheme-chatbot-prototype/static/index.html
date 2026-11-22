@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Village Benefit Assistant</title>
+<style>
+:root { color-scheme: light; --ink:#152b24; --muted:#5d6f68; --brand:#176b50; --wash:#eef6f1; --line:#cfe2d7; }
+* { box-sizing:border-box; }
+body { margin:0; font-family:system-ui,-apple-system,Segoe UI,Noto Sans,sans-serif; background:#f7faf8; color:var(--ink); }
+header { background:var(--brand); color:white; padding:18px 22px; }
+header h1 { margin:0; font-size:22px; }
+header p { margin:6px 0 0; opacity:.9; font-size:14px; }
+.shell { max-width:980px; margin:22px auto; padding:0 16px; }
+.card { background:white; border:1px solid var(--line); border-radius:14px; padding:18px; box-shadow:0 4px 18px rgba(23,107,80,.06); }
+.controls { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:14px; }
+select, button, input, textarea { font:inherit; }
+select { padding:8px 10px; border:1px solid var(--line); border-radius:9px; background:white; }
+button { padding:9px 13px; border:1px solid var(--brand); border-radius:9px; background:var(--brand); color:white; cursor:pointer; }
+button.secondary { background:white; color:var(--brand); }
+button:disabled { opacity:.5; cursor:not-allowed; }
+#log { height:420px; overflow-y:auto; border:1px solid var(--line); border-radius:12px; background:var(--wash); padding:14px; }
+.msg { margin:0 0 12px; padding:11px 13px; border-radius:11px; line-height:1.5; white-space:pre-wrap; word-break:break-word; }
+.msg.user { background:#dff0e6; margin-left:60px; }
+.msg.bot { background:white; border:1px solid var(--line); margin-right:60px; }
+.msg.bot a { color:var(--brand); }
+.composer { display:flex; gap:10px; margin-top:14px; }
+textarea { flex:1; min-height:56px; resize:vertical; padding:10px 12px; border:1px solid var(--line); border-radius:10px; }
+.meta { margin-top:12px; font-size:13px; color:var(--muted); }
+.chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
+.chip { background:var(--wash); border:1px solid var(--line); border-radius:999px; padding:4px 9px; font-size:12px; }
+#status { font-size:13px; color:var(--muted); min-height:18px; margin-top:8px; }
+.note { font-size:13px; color:var(--muted); margin-top:12px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Village Benefit Assistant</h1>
+  <p>Ask in Hindi, Urdu, English or German. Get scheme matches, documents, steps and official links.</p>
+</header>
+<div class="shell">
+  <div class="card">
+    <div class="controls">
+      <label for="language">Language</label>
+      <select id="language">
+        <option value="en">English</option>
+        <option value="hi">हिन्दी</option>
+        <option value="ur">اردو</option>
+        <option value="de">Deutsch</option>
+      </select>
+      <button id="mic" class="secondary" type="button">Start voice</button>
+      <button id="speak" class="secondary" type="button">Speak replies: off</button>
+      <button id="reset" class="secondary" type="button">New conversation</button>
+      <span id="status"></span>
+    </div>
+    <div id="log"></div>
+    <div class="composer">
+      <textarea id="input" placeholder="Type your question, e.g. I am a farmer with 2 acres in India"></textarea>
+      <button id="send" type="button">Send</button>
+    </div>
+    <div class="meta">
+      <div id="profile" class="chips"></div>
+      <div id="matches" class="chips"></div>
+      <div class="note">Answers are indicative. The official department decides final eligibility.</div>
+    </div>
+  </div>
+</div>
+<script>
+const log = document.getElementById('log');
+const input = document.getElementById('input');
+const status = document.getElementById('status');
+const language = document.getElementById('language');
+const mic = document.getElementById('mic');
+const speakButton = document.getElementById('speak');
+const profileBox = document.getElementById('profile');
+const matchesBox = document.getElementById('matches');
+
+let profile = {};
+let expecting = null;
+let asked = 0;
+let recognition = null;
+let listening = false;
+let speakReplies = false;
+
+const locales = { en:'en-IN', hi:'hi-IN', ur:'ur-IN', de:'de-DE' };
+
+function escapeHtml(text) {
+  return String(text).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function formatReply(text) {
+  let safe = escapeHtml(text);
+  safe = safe.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  safe = safe.replace(/\bhttps?:\/\/[^\s<|]+/g, url => `<a href="${url}" target="_blank" rel="noreferrer">${url}</a>`);
+  return safe;
+}
+
+function addMessage(role, text) {
+  const div = document.createElement('div');
+  div.className = 'msg ' + role;
+  div.innerHTML = formatReply(text);
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+  return div;
+}
+
+function renderChatState(data) {
+  profile = data.profile || {};
+  expecting = data.expecting || null;
+  asked = profile._asked || 0;
+  profileBox.innerHTML = '';
+  matchesBox.innerHTML = '';
+  Object.entries(profile).filter(([k]) => !k.startsWith('_')).forEach(([k,v]) => {
+    const chip = document.createElement('span');
+    chip.className = 'chip';
+    chip.textContent = k.replace(/_/g,' ') + ': ' + v;
+    profileBox.appendChild(chip);
+  });
+  (data.matches || []).forEach(id => {
+    const chip = document.createElement('span');
+    chip.className = 'chip';
+    chip.textContent = id.replace(/_/g,' ');
+    matchesBox.appendChild(chip);
+  });
+  if (speakReplies && data.reply) speak(data.reply);
+}
+
+async function send(message) {
+  const text = String(message || '').trim();
+  if (!text) return;
+  addMessage('user', text);
+  input.value = '';
+  status.textContent = 'Thinking...';
+  try {
+    const response = await fetch('/api/chat', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ message:text, language:language.value, profile, expecting, asked })
+    });
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    const data = await response.json();
+    addMessage('bot', data.reply);
+    renderChatState(data);
+    status.textContent = '';
+  } catch (error) {
+    status.textContent = 'Error: ' + error.message;
+    addMessage('bot', 'Sorry, the service is not reachable right now.');
+  }
+}
+
+function speak(text) {
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(String(text).replace(/\*\*/g,'').replace(/•/g,''));
+  utterance.lang = locales[language.value] || 'en-IN';
+  utterance.rate = 0.95;
+  window.speechSynthesis.speak(utterance);
+}
+
+function startVoice() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    status.textContent = 'Speech recognition is not supported in this browser.';
+    return;
+  }
+  recognition = new SpeechRecognition();
+  recognition.lang = locales[language.value] || 'en-IN';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+  recognition.onstart = () => { listening = true; mic.textContent = 'Stop voice'; status.textContent = 'Listening...'; };
+  recognition.onresult = event => {
+    const transcript = event.results[0][0].transcript;
+    status.textContent = 'Heard: ' + transcript;
+    send(transcript);
+  };
+  recognition.onerror = event => { status.textContent = 'Voice error: ' + event.error; };
+  recognition.onend = () => { listening = false; mic.textContent = 'Start voice'; };
+  recognition.start();
+}
+
+document.getElementById('send').addEventListener('click', () => send(input.value));
+input.addEventListener('keydown', event => {
+  if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); send(input.value); }
+});
+mic.addEventListener('click', () => {
+  if (listening && recognition) { recognition.stop(); return; }
+  startVoice();
+});
+speakButton.addEventListener('click', () => {
+  speakReplies = !speakReplies;
+  speakButton.textContent = 'Speak replies: ' + (speakReplies ? 'on' : 'off');
+  if (!speakReplies && 'speechSynthesis' in window) window.speechSynthesis.cancel();
+});
+document.getElementById('reset').addEventListener('click', () => {
+  profile = {}; expecting = null; asked = 0;
+  log.innerHTML = ''; profileBox.innerHTML = ''; matchesBox.innerHTML = '';
+  addMessage('bot', 'New conversation started. What do you need help with?');
+});
+
+addMessage('bot', 'Namaste! Tell me your situation. For example: I am a widow aged 45 and my family has a BPL card.');
+</script>
+</body>
+</html>

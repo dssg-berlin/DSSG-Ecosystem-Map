@@ -1,0 +1,4 @@
+# Generated data from running scripts
+data/
+outputs/
+__pycache__/
